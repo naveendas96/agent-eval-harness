@@ -1,0 +1,19 @@
+name: eval-gate
+on: [pull_request]
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install -e ".[dev]"
+      - run: pytest -q
+      # Baseline = main's agent config, candidate = this PR's. Swap mock:* for your adapter (e.g. http://localhost:8080/agent).
+      - run: aeh run suites/support_agent.yaml --agent mock:v1 --run-id baseline
+      - run: aeh run suites/support_agent.yaml --agent "${CANDIDATE_AGENT:-mock:v1}" --run-id candidate
+      - name: Gate on regressions
+        run: aeh compare baseline candidate --fail-on-regression | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: eval-results, path: results/evals.sqlite }

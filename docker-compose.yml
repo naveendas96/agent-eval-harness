@@ -1,0 +1,6 @@
+services:
+  dashboard:
+    build: .
+    command: sh -c "make demo; streamlit run src/aeh/dashboard.py --server.address 0.0.0.0"
+    ports: ["8501:8501"]
+    environment: { LLM_PROVIDER: "${LLM_PROVIDER:-mock}" }
