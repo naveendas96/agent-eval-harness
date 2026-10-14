@@ -2,6 +2,10 @@
 
 **Evaluation, regression gating and observability for LLM agents.** Write test suites in YAML, plug in any agent through an adapter, score accuracy, tool-call correctness, groundedness, safety, latency and cost, store every run, compare runs, block regressions in CI and explore results in a Streamlit dashboard.
 
+[![Demo: real CLI run](docs/demo/demo.jpg)](docs/demo/demo.mp4)
+
+*Demo recorded from the real CLI output ([MP4](docs/demo/demo.mp4)). More projects: [thenavasoft.com/projects](https://thenavasoft.com/projects.html)*
+
 ## Problem
 Teams ship prompt and model changes to agents based on vibes. A "cheaper prompt" can quietly break tool use or start leaking secrets. Production agents need the same gate code has: a repeatable test suite, metrics with thresholds and a CI check that fails the PR.
 
