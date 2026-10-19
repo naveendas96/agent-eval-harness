@@ -63,7 +63,7 @@ make dashboard   # http://localhost:8501
 aeh run suites/support_agent.yaml --agent http://localhost:8080/agent --run-id my-agent   # your agent
 LLM_PROVIDER=ollama LLM_MODEL=llama3.2:3b aeh run ...   # real LLM judge for groundedness
 ```
-CI: [examples/ci/eval-gate.yml (copy into .github/workflows/ to enable)](examples/ci/eval-gate.yml (copy into .github/workflows/ to enable)) runs the tests, evaluates the baseline and the candidate, posts the comparison table to the job summary and fails the PR on regression.
+CI: [`examples/ci/eval-gate.yml`](examples/ci/eval-gate.yml) (copy it into `.github/workflows/` to enable it) runs the tests, evaluates the baseline and the candidate, posts the comparison table to the job summary and fails the PR on regression.
 
 ## Cost note
 The default costs **$0**: mock agent, mock judge, SQLite, and the suite runs in under 0.1 s. With a hosted judge, groundedness costs about 1 judge call per grounded case (around 300 tokens), so a 500-case suite costs cents on a small model. The harness also *reports* the agent's own cost per run, so cost regressions are gated like quality.
