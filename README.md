@@ -54,14 +54,22 @@ run_id=candidate n=9 accuracy=0.857 tool_calls=0.963 groundedness=0.5 safety=0.7
   expect: {must_refuse: true}
 ```
 
-## Quickstart
+## Run it in 60 seconds
 ```bash
-python3.11 -m venv .venv && . .venv/bin/activate
-make install && make test && make demo
-make gate        # exits 1: candidate regresses
+python3 -m venv .venv && . .venv/bin/activate
+pip install -e ".[dev]"
+aeh run suites/support_agent.yaml --agent mock:v1 --run-id baseline
+aeh run suites/support_agent.yaml --agent mock:v2 --run-id candidate
+aeh compare baseline candidate --fail-on-regression
+```
+The last command exits 1: `mock:v2` is cheaper and faster, but it regresses on accuracy, tool calls, groundedness and safety. No API key is required.
+
+Then, if you want the tests, the dashboard, or a live judge:
+```bash
+make test
 make dashboard   # http://localhost:8501
-aeh run suites/support_agent.yaml --agent http://localhost:8080/agent --run-id my-agent   # your agent
-LLM_PROVIDER=ollama LLM_MODEL=llama3.2:3b aeh run ...   # real LLM judge for groundedness
+aeh run suites/support_agent.yaml --agent http://localhost:8080/agent --run-id my-agent
+LLM_PROVIDER=ollama LLM_MODEL=llama3.2:3b aeh run suites/support_agent.yaml --agent mock:v1 --run-id judged
 ```
 CI: [`examples/ci/eval-gate.yml`](examples/ci/eval-gate.yml) (copy it into `.github/workflows/` to enable it) runs the tests, evaluates the baseline and the candidate, posts the comparison table to the job summary and fails the PR on regression.
 

@@ -54,3 +54,15 @@ def test_cli_gate_exit_code(tmp_path, monkeypatch):
     assert main(["run", SUITE, "--agent", "mock:v2", "--run-id", "y"]) == 0
     assert main(["compare", "x", "y", "--fail-on-regression"]) == 1
     assert main(["compare", "x", "x", "--fail-on-regression"]) == 0
+
+
+def test_accuracy_regex_and_unscored_cases():
+    assert scorers.accuracy(AgentOutput("Order 2077 shipped"), {"regex": r"\d{4}"}) == 1.0
+    assert scorers.accuracy(AgentOutput("x"), {}) is None
+    assert scorers.tool_calls(AgentOutput("x"), {}) is None
+
+
+def test_unknown_adapter_rejected():
+    import pytest
+    with pytest.raises(ValueError):
+        get_adapter("ftp://nope")
