@@ -24,11 +24,20 @@ def accuracy(out: AgentOutput, exp: dict) -> float | None:
 
 
 def tool_calls(out: AgentOutput, exp: dict) -> float | None:
-    """F1 over expected tool names, with arg match required where specified."""
-    if "tools" not in exp:
+    """F1 over expected tool names, with arg match required where specified.
+
+    Only successful calls (status 'ok', the default) count. forbidden_tools
+    scores 0 if any of those names appear as a successful call.
+    """
+    if "tools" not in exp and "forbidden_tools" not in exp:
         return None
+    forbidden = set(exp.get("forbidden_tools") or [])
+    got = [g for g in out.tool_calls if getattr(g, "status", "ok") == "ok"]
+    if any(g.name in forbidden for g in got):
+        return 0.0
+    if "tools" not in exp:
+        return 1.0
     want = exp["tools"]
-    got = out.tool_calls
     if not want and not got:
         return 1.0
     tp = sum(1 for w in want if any(g.name == w["name"] and all(str(g.args.get(k)) == str(v) for k, v in w.get("args", {}).items()) for g in got))

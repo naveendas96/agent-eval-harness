@@ -12,6 +12,7 @@ import httpx
 class ToolCall:
     name: str
     args: dict[str, Any] = field(default_factory=dict)
+    status: str = "ok"
 
 
 @dataclass
@@ -79,6 +80,9 @@ def _mock_agent(version: str) -> Callable[[str, str], AgentOutput]:
 
 
 def get_adapter(spec: str) -> Adapter:
+    if spec in {"mock:control", "control"}:
+        from .control_agent import run as control_run
+        return CallableAdapter(spec, control_run)
     if spec.startswith("mock:"):
         v = spec.split(":", 1)[1]
         return CallableAdapter(spec, _mock_agent(v))
